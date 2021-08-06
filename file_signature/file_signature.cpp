@@ -223,9 +223,6 @@ void writer_impl::run() {
     }
 
     std::unique_lock lk{mt};
-    if (pipeline_failed) {
-      return;
-    }
 
     std::ofstream s;
 

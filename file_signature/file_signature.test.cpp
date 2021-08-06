@@ -1,12 +1,9 @@
-#include <file_signature/file_signature.h>
 #include <file_signature/file_signature.test.h>
-#include <file_signature/file_signature_impl.h>
 #include <gtest/gtest.h>
 
 #include <filesystem>
 #include <fstream>
 #include <ios>
-#include <mutex>
 #include <string>
 #include <vector>
 
