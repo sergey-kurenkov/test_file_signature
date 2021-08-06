@@ -48,7 +48,7 @@ class hash_calc_impl : public hash_calc {
   std::mutex mt;
   std::condition_variable cv;
   std::queue<file_block> blocks;
-  bool readed_finished;
+  bool reader_finished;
   bool failed;
   bool pipeline_failed;
 };

@@ -1,6 +1,5 @@
 #include <file_signature/file_signature.h>
 
-#include <boost/program_options/option.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>

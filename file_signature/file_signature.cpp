@@ -8,7 +8,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -103,7 +102,7 @@ void reader::run() {
 
 hash_calc_impl::hash_calc_impl(writer& w)
     : writer_{w},
-      readed_finished{false},
+      reader_finished{false},
       failed{false},
       pipeline_failed{false} {}
 
@@ -129,7 +128,7 @@ void hash_calc_impl::on_pipeline_failure() {
 
 void hash_calc_impl::on_finishing_reader() {
   std::unique_lock lk{mt};
-  readed_finished = true;
+  reader_finished = true;
   lk.unlock();
   cv.notify_one();
 }
@@ -146,7 +145,7 @@ void hash_calc_impl::run() {
       }
 
       if (blocks.empty()) {
-        if (readed_finished) {
+        if (reader_finished) {
           break;
         }
 
