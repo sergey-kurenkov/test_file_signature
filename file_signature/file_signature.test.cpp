@@ -1,13 +1,12 @@
-#include <file_signature/file_signature_impl.h>
 #include <file_signature/file_signature.h>
 #include <file_signature/file_signature.test.h>
-
+#include <file_signature/file_signature_impl.h>
 #include <gtest/gtest.h>
 
 #include <filesystem>
-#include <mutex>
 #include <fstream>
 #include <ios>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -35,9 +34,7 @@ void create_file_for_reader(std::string name, int size, char ch) {
   f.close();
 }
 
-void delete_file_for_reader(std::string name) {
-  std::filesystem::remove(name);
-}
+void delete_file_for_reader(std::string name) { std::filesystem::remove(name); }
 
 std::vector<std::string> read_file(std::string input_file) {
   std::ifstream s;

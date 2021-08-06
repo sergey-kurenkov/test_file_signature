@@ -1,9 +1,9 @@
 #ifndef FILE_SIGNATURE_FILE_SIGNATURE_IMPL_H_
 #define FILE_SIGNATURE_FILE_SIGNATURE_IMPL_H_
 
-#include <string>
-#include <queue>
 #include <mutex>
+#include <queue>
+#include <string>
 #include <vector>
 
 namespace file_signature {
@@ -28,6 +28,7 @@ class reader {
  public:
   reader(const std::string& input_file, int block_size, hash_calc&);
   void run();
+
  private:
   std::string input_file;
   hash_calc& calc;
@@ -52,7 +53,6 @@ class hash_calc_impl : public hash_calc {
   bool pipeline_failed;
 };
 
-
 class writer_impl : public writer {
  public:
   explicit writer_impl(const std::string& output_file);
@@ -72,8 +72,7 @@ class writer_impl : public writer {
 
 class generator {
  public:
-  generator(std::string input_file, std::string signature_file,
-            int block_size);
+  generator(std::string input_file, std::string signature_file, int block_size);
   void run();
 
  private:
@@ -81,7 +80,6 @@ class generator {
   std::string signature_file;
   int block_size;
 };
-
 
 }  // namespace file_signature
 

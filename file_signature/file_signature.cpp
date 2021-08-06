@@ -2,22 +2,19 @@
 #include <file_signature/file_signature_impl.h>
 
 #include <boost/crc.hpp>
-
-#include <ios>
-#include <vector>
-#include <thread>
-#include <utility>
-#include <stdexcept>
-#include <string>
 #include <fstream>
 #include <future>
+#include <ios>
 #include <memory>
-
+#include <stdexcept>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace file_signature {
 
-void generate(std::string input_file,
-              std::string signature_file,
+void generate(std::string input_file, std::string signature_file,
               int block_size) {
   generator g{input_file, signature_file, block_size};
   g.run();
@@ -27,13 +24,11 @@ void generate(std::string input_file,
 // generator
 //
 
-generator::generator(
-  std::string input_file, std::string signature_file, int block_size)
-  :
-  input_file {input_file},
-  signature_file {signature_file},
-  block_size {block_size} {
-}
+generator::generator(std::string input_file, std::string signature_file,
+                     int block_size)
+    : input_file{input_file},
+      signature_file{signature_file},
+      block_size{block_size} {}
 
 void generator::run() {
   try {
@@ -41,9 +36,9 @@ void generator::run() {
     hash_calc_impl h{w};
     reader r{input_file, block_size, h};
 
-    auto reader_result = std::async(std::launch::async, [&](){r.run();});
-    auto hash_calc_result = std::async(std::launch::async, [&](){h.run();});
-    auto writer_result = std::async(std::launch::async, [&](){w.run();});
+    auto reader_result = std::async(std::launch::async, [&]() { r.run(); });
+    auto hash_calc_result = std::async(std::launch::async, [&]() { h.run(); });
+    auto writer_result = std::async(std::launch::async, [&]() { w.run(); });
 
     reader_result.wait();
     hash_calc_result.wait();
@@ -61,9 +56,8 @@ void generator::run() {
 // reader
 //
 
-reader::reader(const std::string& input_file, int block_size, hash_calc& calc) :
-  input_file{input_file}, block_size{block_size}, calc{calc} {
-}
+reader::reader(const std::string& input_file, int block_size, hash_calc& calc)
+    : input_file{input_file}, block_size{block_size}, calc{calc} {}
 
 void reader::run() {
   try {
@@ -72,8 +66,7 @@ void reader::run() {
     try {
       s.exceptions(std::ifstream::badbit | std::ios_base::failbit);
       s.open(input_file, std::ios::binary | std::ios::in);
-    }
-    catch (std::exception& e) {
+    } catch (std::exception& e) {
       std::throw_with_nested(error("Couldn't open " + input_file));
     }
 
@@ -94,7 +87,7 @@ void reader::run() {
       }
     } catch (std::exception& e) {
       std::throw_with_nested(
-        error("Couldn't open " + input_file + ": " + e.what()));
+          error("Couldn't open " + input_file + ": " + e.what()));
     }
   } catch (std::exception& e) {
     calc.on_pipeline_failure();
@@ -109,12 +102,10 @@ void reader::run() {
 //
 
 hash_calc_impl::hash_calc_impl(writer& w)
-  :
-  writer_{w},
-  readed_finished{false},
-  failed{false},
-  pipeline_failed{false} {
-}
+    : writer_{w},
+      readed_finished{false},
+      failed{false},
+      pipeline_failed{false} {}
 
 void hash_calc_impl::on_read_block(file_block b) {
   std::unique_lock lk{mt};
@@ -172,7 +163,7 @@ void hash_calc_impl::run() {
       result.process_bytes(b.data(), b.size());
       writer_.on_calc_block_hash(result.checksum());
     }
-  } catch(const std::exception& e) {
+  } catch (const std::exception& e) {
     writer_.on_pipeline_failure();
     std::unique_lock lk{mt};
     failed = true;
@@ -188,11 +179,9 @@ void hash_calc_impl::run() {
 // writer_impl
 //
 writer_impl::writer_impl(const std::string& output_file)
-:
-  output_file{output_file},
-  hash_calc_finished{false},
-  pipeline_failed{false} {
-}
+    : output_file{output_file},
+      hash_calc_finished{false},
+      pipeline_failed{false} {}
 
 void writer_impl::on_calc_block_hash(int hash) {
   std::unique_lock lk{mt};
@@ -254,7 +243,7 @@ void writer_impl::run() {
     s.close();
 
     return;
-  } catch(const std::exception& e) {
+  } catch (const std::exception& e) {
     std::throw_with_nested(error(e.what()));
   }
 }
@@ -263,10 +252,6 @@ void writer_impl::run() {
 // error
 //
 
-error::error(const std::string& s)
-  :
-  std::runtime_error(s) {
-}
-
+error::error(const std::string& s) : std::runtime_error(s) {}
 
 }  // namespace file_signature

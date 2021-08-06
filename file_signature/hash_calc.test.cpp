@@ -1,34 +1,33 @@
-#include <file_signature/file_signature_impl.h>
 #include <file_signature/file_signature.h>
 #include <file_signature/file_signature.test.h>
-
+#include <file_signature/file_signature_impl.h>
 #include <gtest/gtest.h>
 
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <ios>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <mutex>
-#include <future>
 
 TEST(HashCalc, RunStop) {
-    try {
-        file_signature::writer_mock w;
-        file_signature::hash_calc_impl h{w};
+  try {
+    file_signature::writer_mock w;
+    file_signature::hash_calc_impl h{w};
 
-        auto hash_calc_result = std::async(std::launch::async, [&](){h.run();});
+    auto hash_calc_result = std::async(std::launch::async, [&]() { h.run(); });
 
-        h.on_finishing_reader();
+    h.on_finishing_reader();
 
-        hash_calc_result.wait();
-        hash_calc_result.get();
+    hash_calc_result.wait();
+    hash_calc_result.get();
 
-        std::lock_guard lk{w.mt};
-        ASSERT_EQ(w.data.size(), 0);
-    } catch (std::exception& e) {
-        FAIL() << e.what();
-    }
+    std::lock_guard lk{w.mt};
+    ASSERT_EQ(w.data.size(), 0);
+  } catch (std::exception& e) {
+    FAIL() << e.what();
+  }
 }
 
 TEST(HashCalc, OneBlock) {
@@ -72,7 +71,7 @@ TEST(HashCalc, TwoBlocksAsyncHandling) {
     file_signature::writer_mock w;
     file_signature::hash_calc_impl h{w};
 
-    auto hash_calc_result = std::async(std::launch::async, [&](){h.run();});
+    auto hash_calc_result = std::async(std::launch::async, [&]() { h.run(); });
 
     h.on_read_block({'c', 'c', 'c'});
     h.on_read_block({'c', 'c', 'c'});
@@ -94,7 +93,7 @@ TEST(HashCalc, OnPipelineFailed) {
     file_signature::writer_mock w;
     file_signature::hash_calc_impl h{w};
 
-    auto hash_calc_result = std::async(std::launch::async, [&](){h.run();});
+    auto hash_calc_result = std::async(std::launch::async, [&]() { h.run(); });
 
     h.on_read_block({'c', 'c', 'c'});
     h.on_pipeline_failure();

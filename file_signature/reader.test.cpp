@@ -1,25 +1,24 @@
-#include <file_signature/file_signature_impl.h>
 #include <file_signature/file_signature.h>
 #include <file_signature/file_signature.test.h>
-
+#include <file_signature/file_signature_impl.h>
 #include <gtest/gtest.h>
 
 #include <filesystem>
-#include <mutex>
 #include <fstream>
+#include <future>
 #include <ios>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <future>
 
 TEST(Reader, StartStop) {
   try {
-    file_signature::create_file_for_reader(
-      file_signature::default_input_file, 1, 'c');
+    file_signature::create_file_for_reader(file_signature::default_input_file,
+                                           1, 'c');
     file_signature::hash_mock hm;
 
     file_signature::reader r{file_signature::default_input_file, 10, hm};
-    auto reader_result = std::async(std::launch::async, [&](){r.run();});
+    auto reader_result = std::async(std::launch::async, [&]() { r.run(); });
 
     reader_result.wait();
     reader_result.get();
@@ -34,26 +33,26 @@ TEST(Reader, StartStop) {
 }
 
 TEST(Reader, ReadOneBlock) {
-    try {
-        file_signature::create_file_for_reader(
-          file_signature::default_input_file, 1, 'c');
-        file_signature::hash_mock hm;
+  try {
+    file_signature::create_file_for_reader(file_signature::default_input_file,
+                                           1, 'c');
+    file_signature::hash_mock hm;
 
-        file_signature::reader r{file_signature::default_input_file, 10, hm};
-        r.run();
+    file_signature::reader r{file_signature::default_input_file, 10, hm};
+    r.run();
 
-        std::lock_guard lk{hm.mt};
-        ASSERT_EQ(hm.blocks.size(), 1);
-        EXPECT_EQ(hm.blocks[0][0], 'c');
-    } catch (std::exception& e) {
-        FAIL() << e.what();
-    }
+    std::lock_guard lk{hm.mt};
+    ASSERT_EQ(hm.blocks.size(), 1);
+    EXPECT_EQ(hm.blocks[0][0], 'c');
+  } catch (std::exception& e) {
+    FAIL() << e.what();
+  }
 }
 
 TEST(Reader, ReadOneFullBlock) {
   try {
-    file_signature::create_file_for_reader(
-      file_signature::default_input_file, 10, 'c');
+    file_signature::create_file_for_reader(file_signature::default_input_file,
+                                           10, 'c');
     file_signature::hash_mock hm;
 
     file_signature::reader r{file_signature::default_input_file, 10, hm};
@@ -71,8 +70,8 @@ TEST(Reader, ReadOneFullBlock) {
 
 TEST(Reader, ReadTwoBlocks) {
   try {
-    file_signature::create_file_for_reader(
-      file_signature::default_input_file, 20, 'd');
+    file_signature::create_file_for_reader(file_signature::default_input_file,
+                                           20, 'd');
     file_signature::hash_mock hm;
 
     file_signature::reader r{file_signature::default_input_file, 10, hm};
@@ -111,10 +110,9 @@ TEST(Reader, EmptyFile) {
   file_signature::hash_mock hm;
 
   try {
-    file_signature::delete_file_for_reader(
-      file_signature::default_input_file);
-    file_signature::create_file_for_reader(
-      file_signature::default_input_file, 0, 'c');
+    file_signature::delete_file_for_reader(file_signature::default_input_file);
+    file_signature::create_file_for_reader(file_signature::default_input_file,
+                                           0, 'c');
 
     file_signature::reader r{file_signature::default_input_file, 10, hm};
     r.run();

@@ -1,16 +1,16 @@
 #ifndef FILE_SIGNATURE_FILE_SIGNATURE_TEST_H_
 #define FILE_SIGNATURE_FILE_SIGNATURE_TEST_H_
 
-#include <file_signature/file_signature_impl.h>
 #include <file_signature/file_signature.h>
+#include <file_signature/file_signature_impl.h>
 
 #include <filesystem>
-#include <mutex>
 #include <fstream>
 #include <ios>
+#include <mutex>
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace file_signature {
 

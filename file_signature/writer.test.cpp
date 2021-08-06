@@ -1,42 +1,38 @@
 #include <file_signature/file_signature.h>
-#include <file_signature/file_signature_impl.h>
 #include <file_signature/file_signature.test.h>
-
+#include <file_signature/file_signature_impl.h>
 #include <gtest/gtest.h>
 
 #include <filesystem>
-#include <mutex>
 #include <fstream>
+#include <future>
 #include <ios>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <future>
-
 
 TEST(Writer, StartStop) {
-    try {
-      file_signature::delete_file_for_reader(
-        file_signature::default_output_file);
-      file_signature::writer_impl w{file_signature::default_output_file};
+  try {
+    file_signature::delete_file_for_reader(file_signature::default_output_file);
+    file_signature::writer_impl w{file_signature::default_output_file};
 
-      auto writer_result = std::async(std::launch::async, [&](){w.run();});
+    auto writer_result = std::async(std::launch::async, [&]() { w.run(); });
 
-      w.on_finishing_hash_calc();
+    w.on_finishing_hash_calc();
 
-      writer_result.wait();
-      writer_result.get();
-    } catch (std::exception& e) {
-        FAIL() << e.what();
-    }
+    writer_result.wait();
+    writer_result.get();
+  } catch (std::exception& e) {
+    FAIL() << e.what();
+  }
 }
 
 TEST(Writer, WriteOneLine) {
   try {
-    file_signature::delete_file_for_reader(
-      file_signature::default_output_file);
+    file_signature::delete_file_for_reader(file_signature::default_output_file);
     file_signature::writer_impl w{file_signature::default_output_file};
 
-    auto writer_result = std::async(std::launch::async, [&](){w.run();});
+    auto writer_result = std::async(std::launch::async, [&]() { w.run(); });
 
     w.on_calc_block_hash(100);
     w.on_finishing_hash_calc();
@@ -54,11 +50,10 @@ TEST(Writer, WriteOneLine) {
 
 TEST(Writer, WriteThreeLines) {
   try {
-    file_signature::delete_file_for_reader(
-      file_signature::default_output_file);
+    file_signature::delete_file_for_reader(file_signature::default_output_file);
     file_signature::writer_impl w{file_signature::default_output_file};
 
-    auto writer_result = std::async(std::launch::async, [&](){w.run();});
+    auto writer_result = std::async(std::launch::async, [&]() { w.run(); });
 
     w.on_calc_block_hash(100);
     w.on_calc_block_hash(-100);
@@ -80,11 +75,10 @@ TEST(Writer, WriteThreeLines) {
 
 TEST(Writer, WriteOneLineThenPipelineFail) {
   try {
-    file_signature::delete_file_for_reader(
-      file_signature::default_output_file);
+    file_signature::delete_file_for_reader(file_signature::default_output_file);
     file_signature::writer_impl w{file_signature::default_output_file};
 
-    auto writer_result = std::async(std::launch::async, [&](){w.run();});
+    auto writer_result = std::async(std::launch::async, [&]() { w.run(); });
 
     w.on_calc_block_hash(100);
     w.on_pipeline_failure();
